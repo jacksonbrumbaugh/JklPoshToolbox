@@ -1,19 +1,11 @@
 <#
 .NOTES
-Created by Jackson Brumbaugh on 2023.09.03
-Version: 2023Sep03-JCB
+Modified: 2023-11-19
+By: Jackson Brumbaugh
 #>
 
 $ModuleLocation = $PSScriptRoot
 $ModuleName = Split-Path $ModuleLocation -Leaf
-
-# Remnant from JklFF
-# enum Position {
-#   QB
-#   RB
-#   WR
-#   TE
-# }
 
 $DoNotExportFolderNameArray = @(
   "Help"
@@ -33,14 +25,12 @@ foreach ( $ThisFolder in ($DoNotExportFolderNameArray + $ExportFolderNameArray) 
 
   if ( Test-Path $LocationName ) {
     $LoadFromFolderNameArray += $LocationName
-  } else {
-    Write-Warning "Failed to locate $($LocationName)"
-  } # End block:if-else LocationName was found
+  } # End block:if LocationName was found
 
 }# End block:foreach Folder (both Export + DoNotExport)
 
 foreach ( $ThisFolderName in $LoadFromFolderNameArray ) {
-  $isThisToBeExport = $true
+  $isThisFolderExported = $true
 
   <#
   Use a match vs a hard -in check in case i got lazy with the folder names
@@ -48,7 +38,7 @@ foreach ( $ThisFolderName in $LoadFromFolderNameArray ) {
   #>
   foreach ( $ThisDoNotExportKeyword in $DoNotExportFolderNameArray ) {
     if ( $ThisFolderName -match $ThisDoNotExportKeyword ) {
-      $isThisToBeExport = $false
+      $isThisFolderExported = $false
     }
   } # End block:foreach Do Not Export Keyword
 
@@ -60,7 +50,7 @@ foreach ( $ThisFolderName in $LoadFromFolderNameArray ) {
     # Dot-Sourcing "loads" the *.ps1 file into the module
     . $ThisPs1File.FullName
 
-    if ( $isThisToBeExport ) {
+    if ( $isThisFolderExported ) {
       $FunctionName = $ThisPs1File.BaseName
 
       # Exporting the function from the file allows users of the module to run the function
